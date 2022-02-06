@@ -1,6 +1,7 @@
-from django import forms  # Импортируем модуль forms, из него возьмём класс ModelForm
+from django import forms
 
-from .models import Post  # Импортируем модель, чтобы связать с ней форму
+from .models import Post
+
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -16,5 +17,4 @@ class PostForm(forms.ModelForm):
             if self.cleaned_data['text'] == '':
                 raise forms.ValidationError('Пост не может быть пустым!')
 
-            return data 
-
+            return data
