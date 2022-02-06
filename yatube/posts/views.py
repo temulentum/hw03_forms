@@ -9,19 +9,12 @@ from django.utils import timezone
 
 
 def index(request):
-    # post_list = Post.objects.all().order_by('-pub_date')
-    # Если порядок сортировки определен в классе Meta модели,
-    # запрос будет выглядить так:
     post_list = Post.objects.all()
-    # Показывать по 10 записей на странице.
     paginator = Paginator(post_list, 10)
 
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get('page')
 
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         'page_obj': page_obj,
     }
@@ -31,19 +24,10 @@ def index(request):
 def group_list(request, slug):
     template = 'posts/group_list.html'
     group = get_object_or_404(Group, slug=slug)
-    # post_list = Post.objects.all().order_by('-pub_date')
-    # Если порядок сортировки определен в классе Meta модели,
-    # запрос будет выглядить так:
     post_list = Post.objects.filter(group=group)
-    # Показывать по 10 записей на странице.
     paginator = Paginator(post_list, 10)
-
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get('page')
-
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         'page_obj': page_obj,
         'text': slug,
@@ -53,8 +37,6 @@ def group_list(request, slug):
 
 
 def profile(request, username):
-    # Здесь код запроса к модели и создание словаря контекста
-    # posts_of_user = get_list_or_404(Post, author = username)
     user = get_object_or_404(User, username=username)
     posts_of_user = Post.objects.filter(author=user)
     paginator = Paginator(posts_of_user, 10)
@@ -68,7 +50,6 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    # Здесь код запроса к модели и создание словаря контекста
     post = get_object_or_404(Post, id=post_id)
     # post = Post.objects.get(id=post_id)
     number_of_posts = Post.objects.count()
@@ -111,12 +92,10 @@ def post_edit(request, post_id):
                        'post_id': post_id}
             return render(request, 'posts/create_post.html', context)
         else:
-            # return post_detail(request, post_id)
             return redirect('posts:post_detail', post_id=post_id)
 
     elif request.method == 'POST':
         post = get_object_or_404(Post, pk=post_id)
-        # if post.author.id == request.user.id:
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             # Post.objects.filter(id=post_id).update(text =
@@ -124,15 +103,9 @@ def post_edit(request, post_id):
             #  pub_date = datetime.now())
             post = form.save(commit=False)
             post.author = request.user
-            # post.text = form.cleaned_data['text']
-            # post.group = form.cleaned_data['group']
-            post.pub_date = timezone.now()  # datetime.now()
-            # post.username = request.user.username
+            post.pub_date = timezone.now()
             # post.pk = None
             # post._state.adding = False
             post.save()
             # return HttpResponse('asfasdasdasd')
             return redirect('posts:post_detail', post_id=post.pk)
-            # return post_detail(request, post_id)
-    # return render(request, 'posts/create_post.html', context)
-    # return HttpResponse(post.author.id)
