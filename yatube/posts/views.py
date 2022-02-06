@@ -106,11 +106,9 @@ def post_edit(request, post_id):
         post = get_object_or_404(Post, pk=post_id)
         form = PostForm(instance=post)
         if post.author.id == request.user.id:
-            context = {
-                'form': form,
-                'is_edit': True,
-                'post_id': post_id,
-                }
+            context = {'form': form,
+                       'is_edit': True,
+                       'post_id': post_id}
             return render(request, 'posts/create_post.html', context)
         else:
             # return post_detail(request, post_id)

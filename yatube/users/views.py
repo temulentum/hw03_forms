@@ -1,7 +1,3 @@
-from django.shortcuts import render
-
-# users/views.py
-# Импортируем CreateView, чтобы создать ему наследника
 from django.views.generic import CreateView
 
 # Функция reverse_lazy позволяет получить URL по параметрам функции path()
@@ -17,4 +13,3 @@ class SignUp(CreateView):
     # После успешной регистрации перенаправляем пользователя на главную.
     success_url = reverse_lazy('posts:index')
     template_name = 'users/signup.html'
-

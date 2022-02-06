@@ -7,8 +7,6 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
 
-        # Здесь перечислим поля модели, которые должны отображаться в веб-форме;
-        # при необходимости можно вывести в веб-форму только часть полей из модели.
         fields = ('text', 'group')
 
         def clean_text(self):
