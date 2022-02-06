@@ -51,7 +51,6 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    # post = Post.objects.get(id=post_id)
     number_of_posts = Post.objects.count()
 
     context = {
@@ -74,7 +73,6 @@ def post_create(request):
             new_post.pub_date = datetime.now()
             new_post.save()
             username = request.user.username
-            # return HttpResponse(username)
             return redirect('posts:profile', username=username)
 
     form = PostForm()
@@ -98,14 +96,8 @@ def post_edit(request, post_id):
         post = get_object_or_404(Post, pk=post_id)
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
-            # Post.objects.filter(id=post_id).update(text =
-            # form.cleaned_data['text'], group = form.cleaned_data['form'],
-            #  pub_date = datetime.now())
             post = form.save(commit=False)
             post.author = request.user
             post.pub_date = timezone.now()
-            # post.pk = None
-            # post._state.adding = False
             post.save()
-            # return HttpResponse('asfasdasdasd')
             return redirect('posts:post_detail', post_id=post.pk)
