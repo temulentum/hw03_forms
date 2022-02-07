@@ -3,7 +3,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from pytz import timezone
 from .models import Post, Group, User
 from .forms import PostForm
-from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
@@ -38,8 +37,9 @@ def group_list(request, slug):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    posts_of_user = Post.objects.filter(author=user)
-    paginator = Paginator(posts_of_user, 10)
+    posts = Post.objects.select_related('author', 'group').filter(
+        author__username=user)
+    paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -62,22 +62,18 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
+    form = PostForm(request.POST or None)
 
-        if form.is_valid():
-            new_post = Post()
-            new_post.author = request.user
-            new_post.text = form.cleaned_data['text']
-            new_post.group = form.cleaned_data['group']
-            new_post.pub_date = datetime.now()
-            new_post.save()
-            username = request.user.username
-            return redirect('posts:profile', username=username)
+    if not form.is_valid():
+        context = {'form': form}
+        return render(request, 'posts/create_post.html', context)
 
-    form = PostForm()
-    context = {'form': form}
-    return render(request, 'posts/create_post.html', context)
+    post = form.save(commit=False)
+    post.author = request.user
+    post.pub_date = timezone.now()
+    post.save()
+    username = request.user.username
+    return redirect('posts:profile', username=username)
 
 
 def post_edit(request, post_id):
