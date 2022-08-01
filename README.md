@@ -51,3 +51,8 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
+
+## Стек технологий
+
+- python 3.7
+- django
